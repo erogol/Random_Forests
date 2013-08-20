@@ -40,6 +40,7 @@ okargs =   {'minparent' 'minleaf' 'nvartosample' 'ntrees' 'nsamtosample' 'method
 defaults = {2 1 round(sqrt(size(Data,2))) 50 numel(Labels) 'c' 'n' []};
 [eid,emsg,minparent,minleaf,m,nTrees,n,method,oobe,W] = getargs(okargs,defaults,varargin{:});
 
+avg_accuracy = 0;
 for i = 1 : nTrees
      
     TDindx = round(numel(Labels)*rand(n,1)+.5);
@@ -66,4 +67,14 @@ for i = 1 : nTrees
     end
     
     Random_Forest(i) = Random_ForestT;
+
+    accuracy = Random_ForestT.oobe;
+    if i == 1
+        avg_accuracy = accuracy;
+    else
+        avg_accuracy = (avg_accuracy*(i-1)+accuracy)/i;
+    end
+
+    display(['--->Tree#',num2str(i),' created: Accu. = ', num2str(Random_ForestT.oobe)]);
+    display(['/// Overall Accuracy = ', num2str(avg_accuracy)]);
 end
