@@ -36,4 +36,81 @@ pred = eval_RF(test_x, model, 'oobe', 'y');
 accuracy = cal_accuracy(test_y,pred)
 </pre>
 
+One possible run of test.m
+<pre>
+...
+--->Tree#968 created: Accu. = 0.9375
+/// Overall Accuracy = 0.92497
+--->Tree#969 created: Accu. = 0.975
+/// Overall Accuracy = 0.92503
+--->Tree#970 created: Accu. = 0.95349
+/// Overall Accuracy = 0.92506
+--->Tree#971 created: Accu. = 0.95745
+/// Overall Accuracy = 0.92509
+--->Tree#972 created: Accu. = 0.88095
+/// Overall Accuracy = 0.92504
+--->Tree#973 created: Accu. = 0.88095
+/// Overall Accuracy = 0.925
+--->Tree#974 created: Accu. = 0.84091
+/// Overall Accuracy = 0.92491
+--->Tree#975 created: Accu. = 0.92683
+/// Overall Accuracy = 0.92491
+--->Tree#976 created: Accu. = 0.925
+/// Overall Accuracy = 0.92491
+--->Tree#977 created: Accu. = 0.95349
+/// Overall Accuracy = 0.92494
+--->Tree#978 created: Accu. = 0.89744
+/// Overall Accuracy = 0.92491
+--->Tree#979 created: Accu. = 0.93023
+/// Overall Accuracy = 0.92492
+--->Tree#980 created: Accu. = 0.89744
+/// Overall Accuracy = 0.92489
+--->Tree#981 created: Accu. = 0.92308
+/// Overall Accuracy = 0.92489
+--->Tree#982 created: Accu. = 0.775
+/// Overall Accuracy = 0.92474
+--->Tree#983 created: Accu. = 0.875
+/// Overall Accuracy = 0.92469
+--->Tree#984 created: Accu. = 0.92857
+/// Overall Accuracy = 0.92469
+--->Tree#985 created: Accu. = 0.86957
+/// Overall Accuracy = 0.92464
+--->Tree#986 created: Accu. = 0.95455
+/// Overall Accuracy = 0.92467
+--->Tree#987 created: Accu. = 0.8913
+/// Overall Accuracy = 0.92463
+--->Tree#988 created: Accu. = 0.93023
+/// Overall Accuracy = 0.92464
+--->Tree#989 created: Accu. = 0.97727
+/// Overall Accuracy = 0.92469
+--->Tree#990 created: Accu. = 0.93333
+/// Overall Accuracy = 0.9247
+--->Tree#991 created: Accu. = 0.91489
+/// Overall Accuracy = 0.92469
+--->Tree#992 created: Accu. = 0.95
+/// Overall Accuracy = 0.92471
+--->Tree#993 created: Accu. = 0.85714
+/// Overall Accuracy = 0.92465
+--->Tree#994 created: Accu. = 0.97561
+/// Overall Accuracy = 0.9247
+--->Tree#995 created: Accu. = 0.93182
+/// Overall Accuracy = 0.92471
+--->Tree#996 created: Accu. = 0.97619
+/// Overall Accuracy = 0.92476
+--->Tree#997 created: Accu. = 0.88889
+/// Overall Accuracy = 0.92472
+--->Tree#998 created: Accu. = 0.9375
+/// Overall Accuracy = 0.92473
+--->Tree#999 created: Accu. = 0.9
+/// Overall Accuracy = 0.92471
+--->Tree#1000 created: Accu. = 0.95
+/// Overall Accuracy = 0.92473
+
+accuracy =
+
+    0.9571
+
+Execution takes 3.1872 secs!!!
+</pre>
+
 
