@@ -14,7 +14,9 @@
 
 ** If you have any question: 
 <b>erengolge@gmail.com</b>
-cs.bilkent.edu.tr/~eren.golge
+www.erengolge.com
+
+<b>Notice:</b> for some machines, you might need to compile mex files again regarding your machine configurations
 
 <h2> Example Run </h2>
 <pre>
