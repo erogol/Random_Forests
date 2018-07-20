@@ -65,7 +65,7 @@ else
             emsg = 'Parameter name must be text.';
             break;
         end
-        i= strmatch(pname,pnames);
+        i= strmatch(pname,pnames,'exact');
         if isempty(i)
             % if they've asked to get back unrecognized names/values, add this
             % one to the list
