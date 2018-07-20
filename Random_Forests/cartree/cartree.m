@@ -22,11 +22,14 @@ function RETree = cartree(Data,Labels,varargin)
 %
 %       nvartosample : the number of (randomly selected) variables 
 %                      to consider at each node (default all)
-
-
-okargs =   {'minparent' 'minleaf' 'nvartosample' 'method' 'weights'};
-defaults = {2 1 size(Data,2) 'c' []};
-[eid,emsg,minparent,minleaf,m,method,W] = getargs(okargs,defaults,varargin{:});
+%
+%       maxdepth     : maximium depth
+%
+%       countlabels  : compute labels for proba
+%
+okargs =   {'minparent' 'minleaf' 'nvartosample' 'method' 'weights','maxdepth','countlabels'};
+defaults = {2 1 size(Data,2) 'c' [],100000,0};
+[eid,emsg,minparent,minleaf,m,method,W,maxdepth,countlabels] = getargs(okargs,defaults,varargin{:});
         
 N = numel(Labels);
 L = 2*ceil(N/minleaf) - 1;
@@ -34,10 +37,20 @@ M = size(Data,2);
 
 nodeDataIndx = cell(L,1);
 nodeDataIndx{1} = 1 : N;
-
+depth = zeros(L,1);
 nodeCutVar = zeros(L,1);
 nodeCutValue = zeros(L,1);
 
+isreg = strcmp(method,'r');
+if countlabels
+    if isreg
+        labelcounts = zeros(L,1);
+    else
+        labelcounts = zeros(L,length(unique(Labels)));
+    end
+else
+    labelcounts = [];
+end
 nodeflags = zeros(L+1,1);
 
 nodelabel = zeros(L,1);
@@ -62,14 +75,21 @@ while nodeflags(current_node) == 1;
     if  numel(unique(Labels(currentDataIndx)))==1
         switch lower(method)
             case {'c','g'}
+                h = hist(Labels(currentDataIndx),1:max_label);
+                if countlabels
+                    labelcounts(current_node,:) = h;
+                end
                 nodelabel(current_node) = unique_labels(Labels(currentDataIndx(1)));
             case 'r'
                 nodelabel(current_node) = Labels(currentDataIndx(1));
+                if countlabels
+                    labelcounts(current_node) = length(currentDataIndx);
+end
         end
         nodeCutVar(current_node) = 0;
         nodeCutValue(current_node) = 0;
     else
-        if numel(currentDataIndx)>=minparent
+        if numel(currentDataIndx)>=minparent && depth(current_node) < maxdepth
              
              node_var = randperm(M);
              node_var = node_var(1:m);
@@ -89,28 +109,60 @@ while nodeflags(current_node) == 1;
                 nodeCutVar(current_node) = node_var(bestCutVar);              
                 nodeCutValue(current_node) = bestCutValue;
                 
-                nodeDataIndx{free_node} = currentDataIndx(Data(currentDataIndx, node_var(bestCutVar))<bestCutValue);
+                nodeDataIndx{free_node} = currentDataIndx(Data(currentDataIndx, node_var(bestCutVar))<bestCutValue);                
                 nodeDataIndx{free_node+1} = currentDataIndx(Data(currentDataIndx, node_var(bestCutVar))>bestCutValue);
-                                
+                depth(free_node) = depth(current_node) + 1;
+                depth(free_node+1) = depth(free_node);
+                
+                % no need to store here
+%                 if countlabels
+%                     if ~isreg 
+%                         % no nee
+%                         %[c,u] = countUnique(Labels(nodeDataIndx{free_node}));
+%                         %labelcounts(free_node,c) = u; 
+%                         %[c,u] = countUnique(Labels(nodeDataIndx{free_node+1}));
+%                         %labelcounts(free_node+1,c) = u;
+%                     else
+%                         % in regression we just count number of nodes
+%                         labelcounts(free_node) = length(nodeDataIndx{free_node});
+%                         labelcounts(free_node+1) = length(nodeDataIndx{free_node+1});
+%                     end
+%                 end
+
                 nodeflags(free_node:free_node + 1) = 1;
                 childnode(current_node)=free_node;
             else
                 switch lower(method)
                     case {'c' 'g'}
-                        [~, leaf_label] = max(hist(Labels(currentDataIndx),1:max_label));
+                        h = hist(Labels(currentDataIndx),1:max_label);
+                        if countlabels
+                            labelcounts(current_node,:) = h;
+                        end
+                        [~, leaf_label] = max(h);
                         nodelabel(current_node)=unique_labels(leaf_label);
                     case 'r'
                         nodelabel(current_node)  = mean(Labels(currentDataIndx));
+                        if countlabels
+                            labelcounts(current_node) = length(currentDataIndx);
+                        end
+                        
                 end
                 
             end
         else
             switch lower(method)
                 case {'c' 'g'}
-                    [~, leaf_label] = max(hist(Labels(currentDataIndx),1:max_label));
+                    h = hist(Labels(currentDataIndx),1:max_label);
+                    if countlabels
+                        labelcounts(current_node,:) = h;
+                    end
+                    [~, leaf_label] = max(h);
                     nodelabel(current_node)=unique_labels(leaf_label);
                 case 'r'
                     nodelabel(current_node)  = mean(Labels(currentDataIndx));
+                        if countlabels
+                            labelcounts(current_node) = length(currentDataIndx);
+                        end
             end
         end
     end
@@ -121,3 +173,18 @@ RETree.nodeCutVar = nodeCutVar(1:current_node-1);
 RETree.nodeCutValue =nodeCutValue(1:current_node-1);
 RETree.childnode = childnode(1:current_node-1);
 RETree.nodelabel = nodelabel(1:current_node-1);
+RETree.depth = depth(1:current_node-1);
+if countlabels
+    if isreg
+        RETree.labelcounts = labelcounts(1:current_node-1);
+    else
+        RETree.labelcounts = labelcounts(1:current_node-1,:);
+    end
+else
+    RETree.labelcounts = [];
+end
+
+% knowing that labels are in fixed range we can use histogram
+function [u,c] = countUnique(X)
+[u,~,ui] = unique(X);
+c = accumarray(ui,1);
